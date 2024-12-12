@@ -1,3 +1,5 @@
+# Makefile
+
 # Image name and tag
 IMAGE_NAME = refactoring_with_ai
 IMAGE_TAG = latest
@@ -9,17 +11,17 @@ help:
 	@echo "Available targets:"
 	@echo "  build     Build the Docker image."
 	@echo "  test      Run all tests inside the container (TDD workflow)."
-	@echo "  run       Run the main analysis application inside the container."
+	@echo "  run       Run the main analysis application inside Docker."
 	@echo "  clean     Remove Python cache files."
 
 build:
 	@echo "➜ Building Docker image: $(CONTAINER_IMAGE)"
-	docker build -t $(CONTAINER_IMAGE) .
+	docker build --no-cache -t $(CONTAINER_IMAGE) .
 	@echo "✔ Docker image built successfully."
 
 test: build
 	@echo "➜ Running tests inside Docker container..."
-	docker run --rm $(CONTAINER_IMAGE) pytest --verbose tests/
+	docker run --rm $(CONTAINER_IMAGE) python -m pytest --verbose tests/
 	@echo "✔ Tests completed."
 
 run: build
