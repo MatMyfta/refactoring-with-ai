@@ -79,5 +79,7 @@ class ParserFactory:
             return PythonParser()
         elif file_extension in ['.js', '.jsx', '.ts', '.tsx']:
             return JSParser()
+        elif file_extension in ['.java']:
+            return JavaParser()
         else:
             raise ValueError(f"No parser available for the extension: {file_extension}")
