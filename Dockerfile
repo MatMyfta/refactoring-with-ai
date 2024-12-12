@@ -8,5 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT ["python", "main.py"]
-CMD ["python", "main.py", "--project-path", "/app/project"]
+# ENTRYPOINT ["python", "main.py"]
+# ENTRYPOINT ["pytest", "--verbose", "tests/"]
+# CMD ["python", "main.py", "--project-path", "/app/project"]
