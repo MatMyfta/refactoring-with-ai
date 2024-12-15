@@ -1,0 +1,137 @@
+[
+    {
+        "file": "/app/project/sample.java",
+        "line_number": 8,
+        "text": "@TODO: Replace in-memory list with a database or persistent storage.",
+        "context": [
+            "",
+            "public UserManager() {",
+            "users = new ArrayList<>(); // @TODO: Replace in-memory list with a database or persistent storage.",
+            "}",
+            ""
+        ],
+        "tags": [
+            "@TODO"
+        ]
+    },
+    {
+        "file": "/app/project/sample.java",
+        "line_number": 37,
+        "text": "@TODO: Add proper error handling for missing users.",
+        "context": [
+            "System.out.println(\"User \" + name + \" removed.\");",
+            "} else {",
+            "// @TODO: Add proper error handling for missing users.",
+            "System.out.println(\"User \" + name + \" not found.\");",
+            "}"
+        ],
+        "tags": [
+            "@TODO"
+        ]
+    },
+    {
+        "file": "/app/project/sample.java",
+        "line_number": 44,
+        "text": "@REFACTOR: Use a proper email validation library.",
+        "context": [
+            "public void sendWelcomeEmail(String email) {",
+            "if (!email.contains(\"@\")) {",
+            "// @REFACTOR: Use a proper email validation library.",
+            "throw new IllegalArgumentException(\"Invalid email address.\");",
+            "}"
+        ],
+        "tags": [
+            "@REFACTOR"
+        ]
+    },
+    {
+        "file": "/app/project/sample.java",
+        "line_number": 65,
+        "text": "@TODO: Save the report to a file instead of printing it to the console.",
+        "context": [
+            ".append(\", Role: \").append(user.getRole()).append(\"\\n\");",
+            "}",
+            "// @TODO: Save the report to a file instead of printing it to the console.",
+            "System.out.println(report.toString());",
+            "}"
+        ],
+        "tags": [
+            "@TODO"
+        ]
+    },
+    {
+        "file": "/app/project/sample.js",
+        "line_number": 32,
+        "text": "@TODO: Implement error handling for missing users.",
+        "context": [
+            "console.log(`User ${name} removed.`);",
+            "} else {",
+            "// @TODO: Implement error handling for missing users.",
+            "console.log(`User ${name} not found.`);",
+            "}"
+        ],
+        "tags": [
+            "@TODO"
+        ]
+    },
+    {
+        "file": "/app/project/sample.js",
+        "line_number": 42,
+        "text": "@REFACTOR: Use a more robust email validation.",
+        "context": [
+            "*/",
+            "if (!email.includes(\"@\")) {",
+            "// @REFACTOR: Use a more robust email validation.",
+            "throw new Error(\"Invalid email address.\");",
+            "}"
+        ],
+        "tags": [
+            "@REFACTOR"
+        ]
+    },
+    {
+        "file": "/app/project/sample.py",
+        "line_number": 25,
+        "text": "@TODO: Implement error handling for user not found.",
+        "context": [
+            "Removes a user by their name.",
+            "\"\"\"",
+            "# @TODO: Implement error handling for user not found.",
+            "# @REFACTOR: Use a more efficient data structure for lookup.",
+            "user_to_remove = None"
+        ],
+        "tags": [
+            "@TODO"
+        ]
+    },
+    {
+        "file": "/app/project/sample.py",
+        "line_number": 26,
+        "text": "@REFACTOR: Use a more efficient data structure for lookup.",
+        "context": [
+            "\"\"\"",
+            "# @TODO: Implement error handling for user not found.",
+            "# @REFACTOR: Use a more efficient data structure for lookup.",
+            "user_to_remove = None",
+            "for user in self.users:"
+        ],
+        "tags": [
+            "@REFACTOR"
+        ]
+    },
+    {
+        "file": "/app/project/sample.py",
+        "line_number": 42,
+        "text": "@REFACTOR: Replace email validation with a proper regex or library.",
+        "context": [
+            "Sends a welcome email to the given address.",
+            "\"\"\"",
+            "# @REFACTOR: Replace email validation with a proper regex or library.",
+            "if \"@\" not in email:",
+            "raise ValueError(\"Invalid email address.\")"
+        ],
+        "tags": [
+            "@REFACTOR"
+        ]
+    }
+]
