@@ -19,11 +19,3 @@ A Dockerized Python application to analyze code comments across multiple languag
 
 - [Docker](https://www.docker.com/get-started) installed on your machine
 - [Make](https://www.gnu.org/software/make/) installed (optional, for using the Makefile)
-
-### Installation
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/project-comment-analyzer.git
-   cd project-comment-analyzer
