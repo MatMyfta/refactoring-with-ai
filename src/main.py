@@ -1,12 +1,15 @@
+# main.py
+
 import argparse
 import json
 import os
 from src.analyzer import Analyzer
+from src.prompt_generator import PromptGenerator
 
 def get_next_report_filename(output_path: str) -> str:
     """
     Generates the next available report filename to avoid overwriting existing reports.
-    If 'report.json' exists, it creates 'report_001.json', 'report_002.json', etc.
+    If 'results.json' exists, it creates 'results_001.json', 'results_002.json', etc.
     """
     base, ext = os.path.splitext(output_path)
     if not os.path.exists(output_path):
@@ -24,7 +27,8 @@ def main():
     parser.add_argument("--project-path", type=str, required=True, help="Path to the project directory to analyze")
     parser.add_argument("--tags", type=str, nargs='+', default=["@TODO", "@FIXME", "@REFACTOR", "@IMPROVE", "@OPTIMIZE", "@DEPRECATE", "@REMOVE", "@BUG", "@HACK"],
                         help="Tags to search for in comments")
-    parser.add_argument("--output", type=str, default="report.json", help="Output file for the report")
+    parser.add_argument("--output", type=str, default="results.json", help="Output file for the analysis report")
+    parser.add_argument("--generate-prompts", action='store_true', help="Generate prompts based on the analysis report and print them to the console")
     args = parser.parse_args()
 
     # Validate project path
@@ -54,6 +58,15 @@ def main():
     except Exception as e:
         print(f"Error writing report to '{output_full_path}': {e}")
         exit(1)
+
+    # Generate prompts if the option is enabled
+    if args.generate_prompts:
+        prompt_generator = PromptGenerator(report_path=output_full_path)
+        try:
+            prompt_generator.create_prompts()
+        except Exception as e:
+            print(f"Error generating prompts: {e}")
+            exit(1)
 
 if __name__ == "__main__":
     main()
