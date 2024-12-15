@@ -1,2 +1,5 @@
 .env
 your_project/output
+
+src/__pycache__
+tests/__pycache__
