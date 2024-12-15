@@ -1,5 +1,3 @@
-# tests/test_analyzer.py
-
 import pytest
 import os
 import json

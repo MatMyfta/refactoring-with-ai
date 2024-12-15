@@ -1,5 +1,3 @@
-# tests/test_parser.py
-
 import pytest
 from src.parser import ParserFactory
 from src.parser import PythonParser, JSParser, JavaParser

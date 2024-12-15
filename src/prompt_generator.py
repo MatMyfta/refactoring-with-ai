@@ -1,5 +1,3 @@
-# src/prompt_generator.py
-
 import json
 import os
 from typing import List, Dict, Optional
@@ -10,6 +8,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class PromptGenerator:
     """
     Generates prompts based on the analysis report.
@@ -19,79 +18,50 @@ class PromptGenerator:
     TAG_TEMPLATES = {
         "@BUG": {
             "default": (
-                "⚠️ BUG Detected\n\n"
-                "- **File:** `{file}`\n"
-                "- **Line:** {line}\n"
-                "- **Description:** {description}\n"
-                "- **Context:**\n"
-                "{code_snippet}\n\n"
-                "**Action Required:** Please investigate and fix the bug."
+                "Please fix the code below. Provide only the corrected code and no explanations or comments. "
+                "Do not include the description of the tag in the comments.\n\n"
+                "Code:\n"
+                "{code_snippet}"
             ),
         },
         "@TODO": {
             "default": (
-                "📝 TODO Item\n\n"
-                "- **File:** `{file}`\n"
-                "- **Line:** {line}\n"
-                "- **Description:** {description}\n"
-                "- **Context:**\n"
-                "{code_snippet}\n\n"
-                "**Action Required:** Implement the TODO task."
+                "Please implement the following TODO. Provide only the corrected code and no explanations or comments. "
+                "Do not include the description of the tag in the comments.\n\n"
+                "Code:\n"
+                "{code_snippet}"
             ),
         },
         "@REFACTOR": {
             "default": (
-                "🔄 Refactoring Suggestion\n\n"
-                "- **File:** `{file}`\n"
-                "- **Line:** {line}\n"
-                "- **Description:** {description}\n"
-                "- **Context:**\n"
-                "{code_snippet}\n\n"
-                "**Action Required:** Refactor the code for better performance or readability."
+                "Refactor the code below for improved performance or readability. Provide only the refactored code and no explanations or comments. "
+                "Do not include the description of the tag in the comments.\n\n"
+                "Code:\n"
+                "{code_snippet}"
             ),
         },
         "@IMPROVE": {
             "default": (
-                "💡 Improvement Suggestion\n\n"
-                "- **File:** `{file}`\n"
-                "- **Line:** {line}\n"
-                "- **Description:** {description}\n"
-                "- **Context:**\n"
-                "{code_snippet}\n\n"
-                "**Action Required:** Improve the implementation as suggested."
+                "Improve the implementation of the following code. Provide only the improved code and no explanations or comments. "
+                "Do not include the description of the tag in the comments.\n\n"
+                "Code:\n"
+                "{code_snippet}"
             ),
         },
         "@FIXME": {
             "default": (
-                "🔧 FIXME Notice\n\n"
-                "- **File:** `{file}`\n"
-                "- **Line:** {line}\n"
-                "- **Description:** {description}\n"
-                "- **Context:**\n"
-                "{code_snippet}\n\n"
-                "**Action Required:** Address the issue marked by FIXME."
+                "Fix the issue in the following code. Provide only the corrected code and no explanations or comments. "
+                "Do not include the description of the tag in the comments.\n\n"
+                "Code:\n"
+                "{code_snippet}"
             ),
         },
         "@HACK": {
             "default": (
-                "🛠️ HACK Alert\n\n"
-                "- **File:** `{file}`\n"
-                "- **Line:** {line}\n"
-                "- **Description:** {description}\n"
-                "- **Context:**\n"
-                "{code_snippet}\n\n"
-                "**Action Required:** Review and replace the hack with a proper solution."
-            ),
-        },
-        "@GLOBAL": {
-            "default": (
-                "🌐 Global Configuration Note\n\n"
-                "- **File:** `{file}`\n"
-                "- **Line:** {line}\n"
-                "- **Description:** {description}\n"
-                "- **Context:**\n"
-                "{code_snippet}\n\n"
-                "**Action Required:** Review the global configuration."
+                "Replace the following hack with a proper implementation. Provide only the corrected code and no explanations or comments. "
+                "Do not include the description of the tag in the comments.\n\n"
+                "Code:\n"
+                "{code_snippet}"
             ),
         },
         # Add more tag templates as needed
@@ -105,7 +75,6 @@ class PromptGenerator:
         ".jsx": "JavaScript",
         ".ts": "TypeScript",
         ".tsx": "TypeScript",
-        # Add more mappings as needed
     }
 
     def __init__(self, report_path: str):
@@ -147,9 +116,6 @@ class PromptGenerator:
         """
         prompts = []
         tags = result.get("tags", [])
-        file_name = os.path.basename(result.get("file", ""))
-        line_number = result.get("line_number", "")
-        text = result.get("text", "")
         context = result.get("context", [])
 
         for tag in tags:
@@ -157,45 +123,58 @@ class PromptGenerator:
             if template_dict:
                 template = template_dict.get("default")
                 if template:
-                    # Determine language based on file extension
-                    _, ext = os.path.splitext(result["file"])
-                    language = self.LANGUAGE_MAP.get(ext.lower(), "Code")
                     # Join context lines to form a code snippet
                     code_snippet = "\n".join(context)
-                    # Clean the description by removing the tag prefix
-                    description = re.sub(rf'^{re.escape(tag)}\s*:\s*', '', text)
-                    prompt = template.format(
-                        file=file_name,
-                        line=line_number,
-                        description=description,
-                        language=language,
-                        code_snippet=code_snippet
-                    )
+                    # Generate the prompt
+                    prompt = template.format(code_snippet=code_snippet.strip())
                     prompts.append(prompt)
             else:
-                # Default prompt for unspecified tags
-                prompt = (
-                    f"🔍 Tag `{tag}` Found\n\n"
-                    f"- **File:** `{file_name}`\n"
-                    f"- **Line:** {line_number}\n"
-                    f"- **Description:** {text}\n\n"
-                    f"**Context:**\n"
-                    f"{'\n'.join(context)}\n"
-                )
-                prompts.append(prompt)
+                # Handle unknown tags gracefully
+                logger.warning(f"Unknown tag '{tag}' in result: {result}")
 
         return prompts
 
     def generate_prompts(self):
         """
-        Generates prompts for all analysis results and prints them to the console.
+        Generates prompts for all analysis results and stores them.
         """
         for result in self.analysis_results:
             prompts = self.generate_prompt(result)
             for prompt in prompts:
-                print(prompt)
-                print("\n---\n")
+                logger.debug(f"Generated prompt: {prompt}")
                 self.prompts.append(prompt)
+
+    def generate_batched_prompt(self, file_path: str, lines: List[int], tags: List[str], context: List[str], full_content: str) -> str:
+        """
+        Generates a single prompt for a batch of tags in the same file.
+
+        Args:
+            file_path (str): Path to the file.
+            lines (List[int]): Line numbers of the tags.
+            tags (List[str]): List of tags in the file.
+            context (List[str]): Context for the tags.
+            full_content (str): Full content of the file.
+
+        Returns:
+            str: The generated prompt.
+        """
+        # Example implementation
+        tag_list = ", ".join(tags)
+        return (f"""The file contains the following tags requiring attention: {tag_list}
+            File: {file_path}
+            Relevant Lines: {lines}
+
+            Full Content of the File:
+            {full_content}
+
+            Instructions:
+            1. Provide fixes or improvements for the code where necessary.
+            2. Include any necessary explanations only as inline comments within the code itself.
+            3. Do not write any additional details or explanations outside of the code.
+            4. Once all tasks are complete, remove the comment lines containing the tags that have been addressed.
+            5. Respond with only the updated code in the provided language.
+        """)
+
 
     def create_prompts(self):
         """

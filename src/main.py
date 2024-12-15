@@ -1,15 +1,16 @@
-# main.py
-
 import argparse
 import json
 import os
+from dotenv import load_dotenv # type: ignore
 from src.analyzer import Analyzer
-from src.prompt_generator import PromptGenerator
+from src.openai_assistant import OpenAIAssistant
+
+load_dotenv()
 
 def get_next_report_filename(output_path: str) -> str:
     """
     Generates the next available report filename to avoid overwriting existing reports.
-    If 'results.json' exists, it creates 'results_001.json', 'results_002.json', etc.
+    If 'report.json' exists, it creates 'report_001.json', 'report_002.json', etc.
     """
     base, ext = os.path.splitext(output_path)
     if not os.path.exists(output_path):
@@ -23,12 +24,13 @@ def get_next_report_filename(output_path: str) -> str:
         index += 1
 
 def main():
-    parser = argparse.ArgumentParser(description="Code Analysis Tool")
+    parser = argparse.ArgumentParser(description="Code Analysis Tool with OpenAI Integration")
     parser.add_argument("--project-path", type=str, required=True, help="Path to the project directory to analyze")
     parser.add_argument("--tags", type=str, nargs='+', default=["@TODO", "@FIXME", "@REFACTOR", "@IMPROVE", "@OPTIMIZE", "@DEPRECATE", "@REMOVE", "@BUG", "@HACK"],
                         help="Tags to search for in comments")
-    parser.add_argument("--output", type=str, default="results.json", help="Output file for the analysis report")
-    parser.add_argument("--generate-prompts", action='store_true', help="Generate prompts based on the analysis report and print them to the console")
+    parser.add_argument("--output", type=str, default="report.json", help="Output file for the report")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+
     args = parser.parse_args()
 
     # Validate project path
@@ -47,6 +49,7 @@ def main():
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    # Perform analysis
     analyzer = Analyzer(project_path=args.project_path, tags=args.tags)
     analyzer.analyze()
     comments = analyzer.get_comments()
@@ -59,14 +62,19 @@ def main():
         print(f"Error writing report to '{output_full_path}': {e}")
         exit(1)
 
-    # Generate prompts if the option is enabled
-    if args.generate_prompts:
-        prompt_generator = PromptGenerator(report_path=output_full_path)
-        try:
-            prompt_generator.create_prompts()
-        except Exception as e:
-            print(f"Error generating prompts: {e}")
-            exit(1)
+    # Get OpenAI API key from environment
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        print("Error: OPENAI_API_KEY not set in environment. Please provide it in a .env file.")
+        exit(1)
+
+    # Process results with OpenAIAssistant
+    assistant = OpenAIAssistant(
+        api_key=api_key,
+        results_path=output_full_path,
+        verbose=args.verbose,
+    )
+    assistant.process_results()
 
 if __name__ == "__main__":
     main()

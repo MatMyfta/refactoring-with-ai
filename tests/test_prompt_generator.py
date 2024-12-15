@@ -1,5 +1,3 @@
-# tests/test_prompt_generator.py
-
 import os
 import json
 import pytest
